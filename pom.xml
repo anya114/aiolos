@@ -60,4 +60,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	<modules>
+		<module>aiolos-register</module>
+	</modules>
 </project>
