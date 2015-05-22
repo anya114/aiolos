@@ -15,11 +15,11 @@ public class ZKConstants {
 
     public static int    MAX_TRY_TIMES              = Integer.getInteger("config-max-try-times", 3);
 
-    public static String NAMESPACE                  = "CONFIG";
+    public static String NAMESPACE                  = "aiolos";
 
-    public static String BASE_PATH                  = "/CONFIG";
+    public static String BASE_PATH                  = "/aiolos";
 
-    public static String PATH_CONFIGURATION         = BASE_PATH + "/CONFIGURATION";
+    public static String PATH_CONFIGURATION         = BASE_PATH + "/config";
 
     public static String CHARSET                    = "UTF-8";
 

@@ -31,7 +31,7 @@ public class ByteHelper {
         return ((b[0] << 24) & 0xFF000000) + ((b[1] << 16) & 0x00FF0000) + ((b[2] << 8) & 0x0000FF00)
                + (b[3] & 0x000000FF);
     }
-
+    
     public static byte[] getIntBytes(final int value) {
         final byte[] b = new byte[4];
         b[0] = (byte) ((value >>> 24) & 0xFF);

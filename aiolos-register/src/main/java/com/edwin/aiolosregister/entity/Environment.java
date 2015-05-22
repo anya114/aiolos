@@ -3,6 +3,8 @@ package com.edwin.aiolosregister.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import com.edwin.aiolosregister.RegisterType;
+
 /**
  * 开发环境表（测试、线上等）
  * 
@@ -23,4 +25,7 @@ public class Environment extends Base {
 
     /** 环境对应的一个zookeeper集群{host1:port,host2:port} */
     private String            hosts;
+
+    /** 注册器类型 */
+    private RegisterType      registerType;
 }

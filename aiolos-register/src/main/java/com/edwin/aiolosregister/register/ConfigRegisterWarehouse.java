@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.edwin.aiolosregister.ConfigRegister;
 import com.edwin.aiolosregister.ConfigRegisterFactory;
+import com.edwin.aiolosregister.RegisterType;
 import com.edwin.aiolosregister.entity.Environment;
 import com.edwin.aiolosregister.helper.BeanLocator;
 import com.google.common.collect.Maps;
@@ -35,6 +36,7 @@ public class ConfigRegisterWarehouse {
 
         Environment environment = new Environment();
         environment.setHosts("192.168.7.41:2181");
+        environment.setRegisterType(RegisterType.CUROTR);
 
         configRegister = configRegisterFactory.generateConfigRegister(environment);
 

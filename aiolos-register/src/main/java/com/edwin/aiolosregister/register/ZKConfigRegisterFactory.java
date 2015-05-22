@@ -22,8 +22,18 @@ public class ZKConfigRegisterFactory implements ConfigRegisterFactory {
         Preconditions.checkNotNull(environment, "Environment is not exsit. ");
 
         String hosts = environment.getHosts();
+        ConfigRegister configRegister = null;
 
-        ConfigRegister configRegister = new CuratorConfigRegister(hosts);
+        switch (environment.getRegisterType()) {
+            case CUROTR:
+                configRegister = new CuratorConfigRegister(hosts);
+                break;
+            case ZK:
+                configRegister = new ZKConfigRegister(hosts);
+                break;
+            default:
+                configRegister = new CuratorConfigRegister(hosts);
+        }
 
         configRegister.init();
 
