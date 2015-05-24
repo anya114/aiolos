@@ -1,4 +1,4 @@
-package com.edwin.aiolosclient;
+package com.edwin.aiolosclient.helper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
