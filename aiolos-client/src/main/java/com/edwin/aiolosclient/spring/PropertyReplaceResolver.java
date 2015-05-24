@@ -11,6 +11,8 @@ import com.edwin.aiolosclient.curator.CuratorWrapper;
 import com.google.common.collect.Sets;
 
 /**
+ * 这个类是copy过来的（需要根据特定的应用场景来实现的）
+ * 
  * @author jinming.wu
  * @date 2015-5-24
  */
