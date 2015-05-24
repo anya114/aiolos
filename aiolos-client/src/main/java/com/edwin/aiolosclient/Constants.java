@@ -14,7 +14,7 @@ public class Constants {
 
     public static final String DEFAULT_DEPLOYENV          = "dev";
 
-    public static final String DEFAULT_ZKSERVER           = "dev.lion.dp:2181";
+    public static final String DEFAULT_ZKSERVER           = "192.168.7.41:2181";
 
     // read from property
     public static int          DEFAULT_SESSION_TIMEOUT    = Integer.getInteger("aiolos-default-session-timeout",
