@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class AiolosCuratorListener implements CuratorListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AiolosCuratorListener.class);
-
+    
     @Override
     public void eventReceived(CuratorFramework client, CuratorEvent event) throws Exception {
 

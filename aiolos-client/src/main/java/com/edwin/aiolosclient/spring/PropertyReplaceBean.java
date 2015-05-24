@@ -1,13 +1,11 @@
 package com.edwin.aiolosclient.spring;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import lombok.Setter;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -18,8 +16,8 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import com.edwin.aiolosclient.BeansInitException;
-import com.edwin.aiolosclient.Environment;
-import com.edwin.aiolosclient.curator.CuratorFactory;
+import com.edwin.aiolosclient.curator.ConfigSyncer;
+import com.edwin.aiolosclient.curator.CuratorWrapper;
 import com.edwin.common.tools.io.ResourceHelper;
 import com.google.common.base.Strings;
 
@@ -31,32 +29,35 @@ import com.google.common.base.Strings;
  */
 public class PropertyReplaceBean implements BeanFactoryPostProcessor, BeanFactoryAware, BeanNameAware {
 
-    private static Logger    logger = LoggerFactory.getLogger(PropertyReplaceBean.class);
+    private static Logger  logger = LoggerFactory.getLogger(PropertyReplaceBean.class);
 
-    private CuratorFramework curatorClient;
+    private CuratorWrapper curatorWrapper;
 
-    // 可配置参数
+    private BeanFactory    beanFactory;
+
+    private String         beanName;
+
+    private Properties     localProps;
+
+    /** zk集群连接地址 */
+    @Setter
+    private String         connectionString;
+
+    /** 是否使用本地属性覆盖 */
+    @Setter
+    private boolean        useLocalProps;
+
     /** 本地配置路径，多个以逗号分隔 */
     @Setter
-    private String           propertiesPaths;
-
-    /** 是否使用本地配置 */
-    @Setter
-    private boolean          useLocalProps;
-
-    // 中间变量
-    /** 本地属性 */
-    private Properties       localProps;
-
-    private BeanFactory      beanFactory;
-
-    private String           beanName;
+    private String         propertiesPaths;
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
 
         try {
+
             init();
+
         } catch (Exception e) {
             throw new BeansInitException("Init bean exception. ", e);
         }
@@ -64,16 +65,16 @@ public class PropertyReplaceBean implements BeanFactoryPostProcessor, BeanFactor
 
     private void init() throws IOException {
 
+        // 初始化本地配置
         initLocalProps();
 
+        // 初始化zk客户端
         initZKClient();
     }
 
     private void initZKClient() {
-
-        curatorClient = CuratorFactory.getInstance().getCuratorClient(Environment.getZkserver());
-
-        curatorClient.start();
+        curatorWrapper = CuratorWrapper.getInstance(connectionString);
+        curatorWrapper.init();
     }
 
     private void initLocalProps() throws IOException {
