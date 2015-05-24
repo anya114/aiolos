@@ -13,4 +13,16 @@ public class ZKPath {
     public static String getTimestampPath(String path) {
         return path + Constants.SEPARATOR + Constants.TIMESTAMP;
     }
+
+    public static String getKeyByPath(String path) {
+        if (path == null || !path.startsWith(Constants.CONFIG_PATH)) {
+            return null;
+        }
+        String key = path.substring(Constants.CONFIG_PATH.length() + 1);
+        int idx = key.indexOf(Constants.SEPARATOR);
+        if (idx != -1) {
+            key = key.substring(0, idx);
+        }
+        return key;
+    }
 }

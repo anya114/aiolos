@@ -1,6 +1,8 @@
 package com.edwin.aiolosclient.curator;
 
 import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Getter;
@@ -16,8 +18,11 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.edwin.aiolosclient.AiolosContext;
 import com.edwin.aiolosclient.ConfigChanageListener;
 import com.edwin.aiolosclient.Constants;
+import com.edwin.aiolosclient.ZKPath;
+import com.edwin.aiolosclient.helper.ByteHelper;
 import com.google.common.collect.Lists;
 
 /**
@@ -41,6 +46,7 @@ public class CuratorWrapper {
     @Setter
     private RetryPolicy                 retryPolicy;
 
+    @Getter
     private List<ConfigChanageListener> changeListeners   = Lists.newArrayList();
 
     /** 同步时间间隔 */
@@ -79,7 +85,6 @@ public class CuratorWrapper {
                 if (isConnected.get()) {
 
                     configSyncer = new ConfigSyncer(this);
-                    configSyncer.setChangeListeners(changeListeners);
 
                     retryPolicy = new ExponentialBackoffRetry(Constants.BASE_SLEEP_MS, Constants.MAX_TRY_TIMES);
                     curatorClient = CuratorFrameworkFactory.builder().connectString(connectionString).sessionTimeoutMs(sessionTimeout).connectionTimeoutMs(connectionTimeout).retryPolicy(retryPolicy).build();
@@ -105,12 +110,73 @@ public class CuratorWrapper {
                             }
                         }
                     });
-                    curatorClient.getCuratorListenable().addListener(new AiolosCuratorListener());
+                    curatorClient.getCuratorListenable().addListener(new AiolosCuratorListener(this));
                     curatorClient.start();
                     configSyncer.startSyncThread(syncInterval);
                 }
             }
         }
+    }
+
+    public String getProperty(String key) {
+
+        String value = null;
+        Properties localProps = AiolosContext.getInstance().getLocalProps();
+        if (localProps != null) {
+            value = localProps.getProperty(key);
+            if (value != null && !value.startsWith("${") && !value.endsWith("}")) {
+                return value;
+            }
+            if (value != null && value.startsWith("${") && value.endsWith("}")) {
+                value = value.substring(2);
+                value = value.substring(0, value.length() - 1);
+                return getValue(key);
+            }
+        }
+
+        if (value == null) {
+            value = getValue(key);
+        }
+
+        return value;
+    }
+
+    public String getValue(String key) {
+
+        ConcurrentMap<String, String> configs = AiolosContext.getInstance().getConfigs();
+
+        String value = configs.get(key);
+
+        if (value == null) {
+            try {
+                this.getValue(key);
+            } catch (Exception e) {
+                logger.error("Fail to get value by {}", key, e);
+            }
+        }
+
+        return value;
+    }
+
+    public String getZKValue(String key) throws Exception {
+
+        String path = ZKPath.getPathByKey(key);
+        String timestampPath = ZKPath.getTimestampPath(path);
+        String value = null;
+
+        byte[] data = this.getData(path, true);
+        if (data != null) {
+            value = new String(data, Constants.CHARSET);
+            AiolosContext.getInstance().getConfigs().put(key, value);
+            data = this.getData(timestampPath, false);
+            if (data != null) {
+                Long timestamp = ByteHelper.getLong(data);
+                AiolosContext.getInstance().getTimestamps().put(path, timestamp);
+            }
+        } else {
+            AiolosContext.getInstance().getConfigs().put(key, "");
+        }
+        return value;
     }
 
     public void watch(final String path) throws Exception {

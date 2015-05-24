@@ -1,11 +1,12 @@
 package com.edwin.aiolosclient;
 
+import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
 
 /**
- * 运行客户端上下文（单例）
+ * 运行客户端上下文（单例，内存中缓存的key-value）
  * 
  * @author jinming.wu
  * @date 2015-5-23
@@ -19,8 +20,9 @@ public class AiolosContext {
 
     private ConcurrentMap<String, Long>   timestamps = Maps.newConcurrentMap();
 
-    private AiolosContext() {
+    private Properties                    localProps;
 
+    private AiolosContext() {
     }
 
     public static AiolosContext getInstance() {
@@ -33,5 +35,13 @@ public class AiolosContext {
 
     public ConcurrentMap<String, Long> getTimestamps() {
         return this.timestamps;
+    }
+
+    public Properties getLocalProps() {
+        return this.localProps;
+    }
+
+    public void setLocalProps(Properties localProps) {
+        this.localProps = localProps;
     }
 }

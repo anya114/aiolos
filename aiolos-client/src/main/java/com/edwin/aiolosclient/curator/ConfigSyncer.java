@@ -1,10 +1,7 @@
 package com.edwin.aiolosclient.curator;
 
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
-
-import lombok.Setter;
 
 import com.edwin.aiolosclient.AiolosContext;
 import com.edwin.aiolosclient.ConfigChanageListener;
@@ -20,10 +17,7 @@ import com.edwin.aiolosclient.helper.ByteHelper;
  */
 public class ConfigSyncer {
 
-    private CuratorWrapper              curatorWrapper;
-
-    @Setter
-    private List<ConfigChanageListener> changeListeners;
+    private CuratorWrapper curatorWrapper;
 
     public ConfigSyncer(CuratorWrapper curatorWrapper) {
         this.curatorWrapper = curatorWrapper;
@@ -62,8 +56,8 @@ public class ConfigSyncer {
                             entry.setValue("");
                         }
 
-                        if (changeListeners != null) {
-                            for (ConfigChanageListener change : changeListeners) {
+                        if (curatorWrapper.getChangeListeners() != null) {
+                            for (ConfigChanageListener change : curatorWrapper.getChangeListeners()) {
                                 change.onChange(entry.getKey(), entry.getValue());
                             }
                         }

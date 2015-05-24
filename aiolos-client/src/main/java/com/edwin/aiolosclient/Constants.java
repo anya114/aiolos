@@ -44,4 +44,8 @@ public class Constants {
     public static final String TIMESTAMP                  = "TIMESTAMP";
 
     public static String       CHARSET                    = "UTF-8";
+
+    public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
+
+    public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
 }
