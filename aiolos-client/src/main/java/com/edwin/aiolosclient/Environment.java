@@ -28,7 +28,7 @@ public class Environment {
     @Getter
     private static String     deployenv;
 
-    /** serverips eg.192.168.7.41:2181 */
+    /** serverips eg.192.168.1.11:2181 */
     @Setter
     @Getter
     private static String     zkserver;
